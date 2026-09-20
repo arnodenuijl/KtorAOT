@@ -75,4 +75,10 @@ class PersonRepository(val database: Database) : IPersonRepository {
             PersonTable.deleteWhere { PersonTable.id eq id }
         }
     }
+
+    override fun deleteAll() {
+        transaction(database) {
+            PersonTable.deleteAll()
+        }
+    }
 }

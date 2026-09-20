@@ -83,6 +83,7 @@ fun Application.configureRouting(repos: PersonRepository) {
             }
 
         }
+        personRoutes(repos)
 
         get("/") {
             call.respond(Greeting("Hello World!"))
@@ -104,19 +105,7 @@ fun Application.configureRouting(repos: PersonRepository) {
                 else -> call.respond(HttpStatusCode.Created, Greeting2("Hello $name!"))
             }
         }
-        get("/person/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest, "Invalid or missing ID parameter")
-                return@get
-            }
-            val person = repos.getPersonById(id)
-            if (person == null) {
-                call.respond(HttpStatusCode.NotFound, "Person not found")
-            } else {
-                call.respond(HttpStatusCode.OK, person)
-            }
-        }
+
     }
 //            .describe {
 //            responses {

@@ -37,7 +37,7 @@ dependencies {
 }
 
 ksp {
-    arg("serializable.processor.namespace", "webapi.generated.graalvm")
+    arg("serializable.processor.namespace", "webapi.generated")
 }
 
 ktor {
@@ -69,9 +69,7 @@ graalvmNative {
             // Pass flags to allow netty/cio socket allocations and include resources
             buildArgs.add("-H:+IncludeAllLocales")
             buildArgs.add("-H:IncludeResources=.*\\.conf|.*\\.yaml|.*\\.xml")
-            buildArgs.add("--features=webapi.generated.graalvm.ReflectionFeature")
-            buildArgs.add("--features=domain.generated.graalvm.ReflectionFeature")
-            buildArgs.add("--enable-http")
+            buildArgs.add("--features=ReflectionFeature")
         }
     }
 }

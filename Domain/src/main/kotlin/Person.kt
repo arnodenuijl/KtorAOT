@@ -20,4 +20,5 @@ interface IPersonRepository {
     fun addPerson(person: Person): Int
     fun updatePerson(id: Int, person: Person)
     fun deletePerson(id: Int)
+    fun deleteAll()
 }

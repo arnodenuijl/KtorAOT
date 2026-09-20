@@ -2,9 +2,6 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ksp)
     alias(libs.plugins.serialization)
-    alias(libs.plugins.graalvm.native)
-
-
 }
 
 group = "net.seriousoft"
@@ -24,7 +21,7 @@ dependencies {
 }
 
 ksp {
-    arg("serializable.processor.namespace", "domain.generated.graalvm")
+    arg("serializable.processor.namespace", "domain.generated")
 }
 
 tasks.test {
