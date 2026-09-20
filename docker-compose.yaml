@@ -1,0 +1,17 @@
+services:
+  oracle-23ai:
+    image: container-registry.oracle.com/database/free:latest
+    container_name: oracle-26ai
+    init: true
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PWD=YourSecurePassword123!
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - ./scripts:/opt/oracle/scripts/setup:ro
+      - ./scripts:/opt/oracle/scripts/startup:ro
+    restart: always
+#
+volumes:
+  oracle-data:
