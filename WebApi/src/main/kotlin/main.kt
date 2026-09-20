@@ -15,12 +15,16 @@ import io.ktor.server.routing.openapi.*
 import io.ktor.utils.io.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.jdbc.Database
+import org.slf4j.LoggerFactory
 
 object ApplicationKt {
+    private val logger = LoggerFactory.getLogger(ApplicationKt::class.java)
     @JvmStatic
     fun main(args: Array<String>) {
+        logger.info("Application Kt")
+        val host = System.getenv("ORACLE_HOST") ?: "localhost"
         val database = Database.connect(
-            url = "jdbc:oracle:thin:@//localhost:1521/FREEPDB1?oracle.jdbc.jsonDefaultGetObjectType=java.lang.String",
+            url = "jdbc:oracle:thin:@//$host:1521/FREEPDB1?oracle.jdbc.jsonDefaultGetObjectType=java.lang.String",
             driver = "oracle.jdbc.OracleDriver",
             user = "ktor",
             password = "ktor"

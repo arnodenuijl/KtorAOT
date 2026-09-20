@@ -8,9 +8,23 @@ services:
     environment:
       - ORACLE_PWD=YourSecurePassword123!
     volumes:
-      - oracle-data:/opt/oracle/oradata
+#      - oracle-data:/opt/oracle/oradata
       - ./scripts:/opt/oracle/scripts/setup:ro
       - ./scripts:/opt/oracle/scripts/startup:ro
+    restart: always
+
+  webapi:
+    build:
+      context: .
+      dockerfile: WebApi/Dockerfile
+    container_name: ktor-webapi
+    environment:
+        - ORACLE_HOST=oracle-23ai
+    ports:
+      - "8080:8080"
+    depends_on:
+      oracle-23ai:
+        condition: service_healthy
     restart: always
 #
 volumes:

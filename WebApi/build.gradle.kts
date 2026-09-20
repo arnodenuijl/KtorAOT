@@ -70,6 +70,8 @@ graalvmNative {
             buildArgs.add("-H:+IncludeAllLocales")
             buildArgs.add("-H:IncludeResources=.*\\.conf|.*\\.yaml|.*\\.xml")
             buildArgs.add("--features=ReflectionFeature")
+            buildArgs.add("--gc=G1")
+            buildArgs.add("--no-fallback")
         }
     }
 }
