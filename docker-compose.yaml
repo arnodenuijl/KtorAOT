@@ -1,7 +1,6 @@
 services:
-  oracle-23ai:
+  oracle-26ai:
     image: container-registry.oracle.com/database/free:latest
-    container_name: oracle-26ai
     init: true
     ports:
       - "1521:1521"
@@ -19,11 +18,11 @@ services:
       dockerfile: WebApi/Dockerfile
     container_name: ktor-webapi
     environment:
-        - ORACLE_HOST=oracle-23ai
+        - ORACLE_HOST=oracle-26ai
     ports:
       - "8080:8080"
     depends_on:
-      oracle-23ai:
+      oracle-26ai:
         condition: service_healthy
     restart: always
 #

@@ -16,6 +16,7 @@ import io.ktor.utils.io.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.slf4j.LoggerFactory
+import java.util.UUID
 
 object ApplicationKt {
     private val logger = LoggerFactory.getLogger(ApplicationKt::class.java)
@@ -34,7 +35,7 @@ object ApplicationKt {
             // Example usage of the repository
             val newPersonId = addPerson(
                 Person(
-                    0, "John Doe", 30, PersonDetails(
+                    UUID(0, 1), "John Doe", 30, PersonDetails(
                         "Some details",
                         phoneNumber = "06-12345678"
                     )
@@ -44,7 +45,7 @@ object ApplicationKt {
             // Example usage of the repository
             val newPersonId2 = addPerson(
                 Person(
-                    0, "Mary Doe", 30, PersonDetails(
+                    UUID(0, 2), "Mary Doe", 30, PersonDetails(
                         "Some details",
                         phoneNumber = "06-12345678"
                     )

@@ -9,13 +9,14 @@ import io.ktor.server.routing.route
 import io.ktor.server.request.receive
 import io.ktor.server.routing.openapi.describe
 import io.ktor.utils.io.ExperimentalKtorApi
+import java.util.UUID
 
 @OptIn(ExperimentalKtorApi::class)
 fun Routing.personRoutes(repos: IPersonRepository) {
 
     route("/persons") {
         get("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
+            val id = call.parameters["id"]?.let { UUID.fromString(it) }
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
                 return@get
@@ -40,7 +41,7 @@ fun Routing.personRoutes(repos: IPersonRepository) {
         }.describe { summary = "Add a new person" }
 
         put("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
+            val id = call.parameters["id"]?.let { UUID.fromString(it) }
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
                 return@put
@@ -51,7 +52,7 @@ fun Routing.personRoutes(repos: IPersonRepository) {
         }.describe { summary = "Update a person by ID" }
 
         delete("/{id}") {
-            val id = call.parameters["id"]?.toIntOrNull()
+            val id = call.parameters["id"]?.let { UUID.fromString(it) }
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest, "Invalid ID")
                 return@delete

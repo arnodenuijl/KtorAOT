@@ -4,12 +4,14 @@ import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.java.javaUUID
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.json.json
+import java.util.UUID
 
-object PersonTable : IdTable<Int>(name = "persons") {
-    override val id: Column<EntityID<Int>> = integer("ID").autoIncrement().entityId()
+object PersonTable : IdTable<UUID>(name = "persons") {
+    override val id: Column<EntityID<UUID>> = javaUUID("ID").clientDefault { UUID.randomUUID() }.entityId()
     val name = varchar("NAME", 100)
     val age = integer("AGE")
     val details = json<PersonDetails>("DETAILS", Json.Default)
@@ -18,7 +20,7 @@ object PersonTable : IdTable<Int>(name = "persons") {
 
 class PersonRepository(val database: Database) : IPersonRepository {
 
-    override fun getPersonById(id: Int): Person? =
+    override fun getPersonById(id: UUID): Person? =
         transaction(database) {
             val row =
                 PersonTable
@@ -49,7 +51,7 @@ class PersonRepository(val database: Database) : IPersonRepository {
                 }
         }
 
-    override fun addPerson(person: Person): Int =
+    override fun addPerson(person: Person): UUID =
         transaction(database) {
             PersonTable.insertAndGetId {
                 it[name] = person.name
@@ -58,7 +60,7 @@ class PersonRepository(val database: Database) : IPersonRepository {
             }.value
         }
 
-    override fun updatePerson(id: Int, person: Person) : Unit =
+    override fun updatePerson(id: UUID, person: Person) : Unit =
         transaction(database) {
             PersonTable.update({
                 PersonTable.id eq id
@@ -70,7 +72,7 @@ class PersonRepository(val database: Database) : IPersonRepository {
         }
 
 
-    override fun deletePerson(id: Int) {
+    override fun deletePerson(id: UUID) {
         transaction(database) {
             PersonTable.deleteWhere { PersonTable.id eq id }
         }
