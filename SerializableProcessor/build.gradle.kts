@@ -5,10 +5,6 @@ plugins {
 group = "net.seriousoft"
 version = "1.0-SNAPSHOT"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(libs.ksp.symbol.processing.api)
     implementation(libs.kotlinx.serialization.json)

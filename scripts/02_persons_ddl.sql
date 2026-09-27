@@ -13,7 +13,7 @@ GRANT ALL PRIVILEGES TO ktor;
 
 CREATE TABLE ktor.persons
 (
-    id      VARCHAR2(36 CHAR) DEFAULT SYS_GUID()
+    id      RAW(16) DEFAULT SYS_GUID()
         CONSTRAINT pk_persons PRIMARY KEY,
     name    VARCHAR2(100 CHAR)
         CONSTRAINT nn_persons_name NOT NULL,

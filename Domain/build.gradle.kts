@@ -7,10 +7,6 @@ plugins {
 group = "net.seriousoft"
 version = "unspecified"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     ksp(project(":SerializableProcessor"))
     implementation(libs.kotlinx.serialization.json)

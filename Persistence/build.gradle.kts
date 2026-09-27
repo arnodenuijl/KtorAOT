@@ -5,10 +5,6 @@ plugins {
 group = "net.seriousoft"
 version = "unspecified"
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation(project(":Domain"))
     implementation(libs.exposed.core)
