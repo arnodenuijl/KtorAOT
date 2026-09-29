@@ -15,7 +15,6 @@ services:
           ldap_host: ldap
           ldap_port: 10389
           base_dn: ou=people,dc=planetexpress,dc=com
-          attribute: uid
-          header_type: ldap
-          verbose: true
+          attribute: cn
+          header_type: basic
           anonymous: null
