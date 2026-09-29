@@ -35,9 +35,10 @@ For the containerized workflow, Docker is sufficient. The Dockerfile uses the Or
 
 ## Run with Docker Compose
 
-From the repository root:
+The native build resolves private Maven dependencies using `codegenomeprojectMavenUsername` and `codegenomeprojectMavenToken` from your user-level `~/.gradle/gradle.properties`. Supply that file as a build-only secret; it is not copied into the image. From the repository root in PowerShell:
 
 ```powershell
+$env:GRADLE_PROPERTIES_FILE = Join-Path $HOME '.gradle\gradle.properties'
 docker compose up --build
 ```
 
@@ -45,6 +46,13 @@ This starts:
 
 - Oracle Database on `localhost:1521`
 - The Ktor API on `http://localhost:8080`
+
+For a direct image build, pass the same file as a BuildKit secret:
+
+```powershell
+$gradleProperties = Join-Path $HOME '.gradle\gradle.properties'
+docker build --secret "id=gradle_properties,src=$gradleProperties" -f WebApi/Dockerfile -t ktor-service .
+```
 
 The API container connects to the database using `ORACLE_HOST=oracle-23ai`. The application uses the following database connection defaults:
 

@@ -6,7 +6,8 @@
 #
 # IMPORTANT: build context must be the repository ROOT (this is a multi-module
 # Gradle project), e.g.:
-#   docker build -f WebApi/Dockerfile -t ktor-service .
+#   docker build --secret id=gradle_properties,src=/path/to/gradle.properties \
+#     -f WebApi/Dockerfile -t ktor-service .
 #
 # G1 GC in Native Image is only available in Oracle GraalVM (not GraalVM
 # Community Edition) on Linux amd64/aarch64, which is why the official Oracle
@@ -26,6 +27,7 @@ COPY WebApi/build.gradle.kts WebApi/build.gradle.kts
 COPY Domain/build.gradle.kts Domain/build.gradle.kts
 COPY Persistence/build.gradle.kts Persistence/build.gradle.kts
 COPY SerializableProcessor/build.gradle.kts SerializableProcessor/build.gradle.kts
+COPY ReWrites/build.gradle.kts ReWrites/build.gradle.kts
 
 RUN chmod +x gradlew \
     && ./gradlew --no-daemon --version
@@ -40,9 +42,13 @@ COPY Domain Domain
 COPY Persistence Persistence
 COPY SerializableProcessor SerializableProcessor
 COPY WebApi WebApi
+COPY ReWrites ReWrites
+
+
 
 # --gc=G1, --no-fallback, etc. are already configured in WebApi/build.gradle.kts
-RUN ./gradlew --no-daemon :WebApi:nativeCompile
+RUN --mount=type=secret,id=gradle_properties,target=/root/.gradle/gradle.properties,required=true \
+    ./gradlew --no-daemon :WebApi:nativeCompile
 RUN cat /workspace/WebApi/build/native/generated/generateResourcesConfigFile/resource-config.json
 #############################################
 # Stage 3: minimal runtime image
@@ -56,5 +62,5 @@ COPY --from=build --chown=ktor:ktor \
     /workspace/WebApi/build/native/nativeCompile/ktor-service /app/ktor-service
 
 USER ktor
-EXPOSE 8080
+EXPOSE 9000
 ENTRYPOINT ["/app/ktor-service"]

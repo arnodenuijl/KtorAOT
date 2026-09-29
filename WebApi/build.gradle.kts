@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.cio)
+    implementation(libs.ktor.server.forwarded.header)
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.server.routing.openapi)
     implementation(libs.ktor.server.routing.swagger)

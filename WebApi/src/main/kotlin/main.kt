@@ -9,6 +9,7 @@ import io.ktor.server.application.*
 import io.ktor.server.cio.*
 import io.ktor.server.engine.*
 import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
 import io.ktor.server.plugins.swagger.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -58,7 +59,7 @@ object ApplicationKt {
 
         embeddedServer(
             factory = CIO,
-            port = 8080
+            port = 9000
         ) {
 
             install(ContentNegotiation) {
@@ -66,6 +67,9 @@ object ApplicationKt {
                     prettyPrint = true
                     isLenient = true
                 })
+            }
+            install(XForwardedHeaders) {
+                // Optionally specify trusted proxies if needed
             }
             rootModule(repos)
         }.start(wait = true)
@@ -81,7 +85,7 @@ object KtorApplication {
 
 fun Application.configureRouting(repos: PersonRepository) {
     routing {
-        swaggerUI(path = "swagger") {
+        swaggerUI(path = "personApi/swagger") {
             info = OpenApiInfo("My API", "1.0")
             source = OpenApiDocSource.Routing(ContentType.Application.Json) {
                 routingRoot.descendants()
@@ -112,12 +116,4 @@ fun Application.configureRouting(repos: PersonRepository) {
         }
 
     }
-//            .describe {
-//            responses {
-//                HttpStatusCode.OK {
-//                    description = "Returns a greeting message"
-//                    schema = jsonSchema<Greeting>()
-//                }
-//            }
-//        }
 }

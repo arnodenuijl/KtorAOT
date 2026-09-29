@@ -1,0 +1,21 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: personApi
+    url: http://host.docker.internal:9000
+    routes:
+      - name: personApi-route
+        paths:
+          - /personApi
+        strip_path: false
+    plugins:
+      - name: ldap-auth
+        config:
+          ldap_host: ldap
+          ldap_port: 10389
+          base_dn: ou=people,dc=planetexpress,dc=com
+          attribute: uid
+          header_type: ldap
+          verbose: true
+          anonymous: null

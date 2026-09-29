@@ -11,8 +11,8 @@ pluginManagement {
         maven {
             url = uri("https://artifacts.codegenomeproject.org/maven")
             credentials {
-                username = providers.gradleProperty("codegenomeprojectMavenUsername").getOrElse("")
-                password = providers.gradleProperty("codegenomeprojectMavenToken").getOrElse("")
+                username = "arnodenuijl@gmail.com"
+                password = "cgp_UrcXdMuD1GY7IQvQWHnHHG3apz7hf7iYMSpjTc3PAmY"
             }
         }
     }
@@ -28,8 +28,8 @@ dependencyResolutionManagement {
         maven {
             url = uri("https://artifacts.codegenomeproject.org/maven")
             credentials {
-                username = providers.gradleProperty("codegenomeprojectMavenUsername").getOrElse("")
-                password = providers.gradleProperty("codegenomeprojectMavenToken").getOrElse("")
+                username = "arnodenuijl@gmail.com"
+                password = "cgp_UrcXdMuD1GY7IQvQWHnHHG3apz7hf7iYMSpjTc3PAmY"
             }
         }
         // Add custom internal/private repositories here once for all submodules
