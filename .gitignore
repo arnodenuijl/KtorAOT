@@ -43,3 +43,5 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+# Konnect data plane credentials
+konnect/

@@ -1,0 +1,145 @@
+_format_version: "3.0"
+_konnect:
+  control_plane_name: kongtest
+consumers:
+- custom_id: 8a1c6f7e-3b4d-4c5a-9e2f-1d0b7a6c5e40
+  plugins:
+  - config:
+      body: null
+      content_type: null
+      echo: false
+      message: Unauthorized
+      status_code: 401
+      trigger: null
+    enabled: true
+    name: request-termination
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  username: anonymous
+- username: keycloak-demo
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: host.docker.internal
+  name: personApi
+  plugins:
+  - name: openid-connect
+    enabled: true
+    config:
+      auth_methods:
+      - authorization_code
+      client_id: kong-client
+      client_secret: kong-client-secret
+      issuer: http://keycloak.localhost:8080/realms/demo
+      redirect_uri: http://localhost:8000/personApi
+      scopes:
+      - openid
+      - profile
+      - email
+      session_secret: kong-oidc-session-secret-change-me
+      consumer_optional: true
+      consumer_claim:
+      - preferred_username
+      hide_credentials: true
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  port: 9000
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: personApi-route
+    path_handling: v0
+    paths:
+    - /personApi
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: false
+  write_timeout: 60000
+upstreams:
+- algorithm: round-robin
+  hash_fallback: none
+  hash_on: none
+  hash_on_cookie_path: /
+  healthchecks:
+    active:
+      concurrency: 10
+      healthy:
+        http_statuses:
+        - 200
+        - 302
+        interval: 0
+        successes: 0
+      http_path: /
+      https_verify_certificate: true
+      timeout: 1
+      type: http
+      unhealthy:
+        http_failures: 0
+        http_statuses:
+        - 429
+        - 404
+        - 500
+        - 501
+        - 502
+        - 503
+        - 504
+        - 505
+        interval: 0
+        tcp_failures: 0
+        timeouts: 0
+    passive:
+      healthy:
+        http_statuses:
+        - 200
+        - 201
+        - 202
+        - 203
+        - 204
+        - 205
+        - 206
+        - 207
+        - 208
+        - 226
+        - 300
+        - 301
+        - 302
+        - 303
+        - 304
+        - 305
+        - 306
+        - 307
+        - 308
+        successes: 0
+      type: http
+      unhealthy:
+        http_failures: 0
+        http_statuses:
+        - 429
+        - 500
+        - 503
+        tcp_failures: 0
+        timeouts: 0
+    threshold: 0
+  name: webapi
+  slots: 10000
+  use_srv_name: false
+vaults:
+- config:
+    config_store_id: 12749a7d-48e8-42a6-a70d-e16b587482e2
+  name: konnect
+  prefix: test
