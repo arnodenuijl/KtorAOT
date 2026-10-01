@@ -3,6 +3,7 @@
 import KtorApplication.rootModule
 import kotlin.uuid.Uuid
 import io.ktor.http.*
+import io.ktor.http.origin
 import io.ktor.openapi.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -11,9 +12,12 @@ import io.ktor.server.engine.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
 import io.ktor.server.plugins.swagger.*
+import io.ktor.server.plugins.origin
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.routing.openapi.*
+import io.ktor.util.toMap
 import io.ktor.utils.io.*
 import kotlinx.serialization.json.Json
 import org.jetbrains.exposed.v1.jdbc.Database
@@ -85,35 +89,44 @@ object KtorApplication {
 
 fun Application.configureRouting(repos: PersonRepository) {
     routing {
-        swaggerUI(path = "personApi/swagger") {
-            info = OpenApiInfo("My API", "1.0")
-            source = OpenApiDocSource.Routing(ContentType.Application.Json) {
-                routingRoot.descendants()
+        route("personApi") {
+            swaggerUI(path = "swagger") {
+                info = OpenApiInfo("My API", "1.0")
+                source = OpenApiDocSource.Routing(ContentType.Application.Json) {
+                    routingRoot.descendants()
+                }
+
+            }
+            personRoutes(repos)
+
+            get("/") {
+                val request = call.request
+                call.respond(
+                    RequestEcho(
+                        url = request.origin.let { "${it.scheme}://${it.serverHost}:${it.serverPort}${it.uri}" },
+                        headers = request.headers.toMap(),
+                        body = call.receiveText()
+                    )
+                )
             }
 
-        }
-        personRoutes(repos)
-
-        get("/") {
-            call.respond(Greeting("Hello World!"))
-        }
-        get("/listDir") {
-            val directoryListing = try {
-                getDirectoryListing()
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.InternalServerError, "Error listing directory: ${e.message}")
-                return@get
+            get("/listDir") {
+                val directoryListing = try {
+                    getDirectoryListing()
+                } catch (e: Exception) {
+                    call.respond(HttpStatusCode.InternalServerError, "Error listing directory: ${e.message}")
+                    return@get
+                }
+                call.respond(directoryListing)
             }
-            call.respond(directoryListing)
-        }
-        get("/greet/{name}") {
-            val name = call.parameters["name"] ?: "World"
-            when (name) {
-                "arno" -> call.respond(HttpStatusCode.OK, Greeting("Hello Arno!"))
-                "" -> call.respond(HttpStatusCode.BadRequest, "Name parameter is empty")
-                else -> call.respond(HttpStatusCode.Created, Greeting2("Hello $name!"))
+            get("/greet/{name}") {
+                val name = call.parameters["name"] ?: "World"
+                when (name) {
+                    "arno" -> call.respond(HttpStatusCode.OK, Greeting("Hello Arno!"))
+                    "" -> call.respond(HttpStatusCode.BadRequest, "Name parameter is empty")
+                    else -> call.respond(HttpStatusCode.Created, Greeting2("Hello $name!"))
+                }
             }
         }
-
     }
 }

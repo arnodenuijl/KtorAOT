@@ -20,7 +20,7 @@ services:
         - gradle_properties
     container_name: ktor-webapi
     environment:
-        - ORACLE_HOST=oracle-26ai
+        - ORACLE_HOST=oracle
     ports:
       - "9000:9000"
     depends_on:
@@ -36,12 +36,26 @@ services:
       - "10636:10636"  # LDAPS
     restart: on-failure
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/realm-demo.json:/opt/keycloak/data/import/realm-demo.json:ro
+    restart: on-failure
+
   kong:
     image: 'kong:3.9-ubuntu'  # Main Kong Gateway Control Plane (default to latest version)
     container_name: kong
     restart: on-failure
     depends_on:
       - ldap
+      - keycloak
     environment:
       KONG_DATABASE: off  # Admin API on HTTP + HTTPS
       KONG_PROXY_LISTEN: 0.0.0.0:8000, 0.0.0.0:8443 ssl  # Admin API on HTTP + HTTPS
@@ -50,6 +64,7 @@ services:
       KONG_ADMIN_GUI_URL: http://localhost:8002  # URL for GUI links
       KONG_DECLARATIVE_CONFIG: /opt/kong/kong.yml  # Path to the declarative configuration file
       KONG_PASSWORD: handyshake  # Required for logging in to Kong Manager (RBAC)
+      KONG_UNTRUSTED_LUA_SANDBOX_REQUIRES: cjson.safe
     ports:
       - "8000:8000"  # Proxy HTTP
       - "8443:8443"  # Proxy HTTPS

@@ -1,20 +1,78 @@
-_format_version: "3.0"
+﻿_format_version: "3.0"
 _transform: true
 
 services:
   - name: personApi
     url: http://host.docker.internal:9000
     routes:
+      # Accepts EITHER LDAP basic auth OR a Keycloak-issued JWT (Bearer) on the same path.
       - name: personApi-route
         paths:
           - /personApi
         strip_path: false
-    plugins:
-      - name: ldap-auth
-        config:
-          ldap_host: ldap
-          ldap_port: 10389
-          base_dn: ou=people,dc=planetexpress,dc=com
-          attribute: cn
-          header_type: basic
-          anonymous: null
+        plugins:
+          - name: ldap-auth
+            config:
+              ldap_host: ldap
+              ldap_port: 10389
+              base_dn: ou=people,dc=planetexpress,dc=com
+              attribute: cn
+              # Enable group search
+              group_base_dn: "ou=people,dc=planetexpress,dc=com"
+              group_name_attribute: cn
+              group_member_attribute: member
+              header_type: basic
+              anonymous: 8a1c6f7e-3b4d-4c5a-9e2f-1d0b7a6c5e40
+          - name: jwt
+            config:
+              key_claim_name: iss
+              claims_to_verify:
+                - exp
+              anonymous: 8a1c6f7e-3b4d-4c5a-9e2f-1d0b7a6c5e40
+          # Runs after jwt (lower priority): forwards the verified token's username claim upstream.
+          - name: post-function
+            config:
+              access:
+                - |
+                  -- never trust a client-supplied value
+                  kong.service.request.clear_header("X-Username")
+                  local token = kong.ctx.shared.authenticated_jwt_token
+                  if not token then return end
+                  local payload = token:match("^[^.]+%.([^.]+)%.")
+                  if not payload then return end
+                  payload = payload:gsub("-", "+"):gsub("_", "/")
+                  payload = payload .. string.rep("=", (4 - #payload % 4) % 4)
+                  local json = ngx.decode_base64(payload)
+                  if not json then return end
+                  -- sandbox blocks cjson; extract the simple string claim by pattern
+                  local username = json:match('"preferred_username"%s*:%s*"([^"\\]*)"')
+                  if username then
+                    kong.service.request.set_header("X-Username", username)
+                  end
+
+consumers:
+  # Fallback identity when no auth plugin succeeded; blocked by request-termination below.
+  - username: anonymous
+    id: 8a1c6f7e-3b4d-4c5a-9e2f-1d0b7a6c5e40
+  - username: keycloak-demo
+    jwt_secrets:
+      - key: http://localhost:8080/realms/demo
+        algorithm: RS256
+        rsa_public_key: |
+          -----BEGIN PUBLIC KEY-----
+          MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsJmnD2KYMnhppXwCErUp
+          Tre3zNUSzw98tsQ/xLQQRQ1SxRchCIAXKGK734nhkaigjQ/AzoJqsd0iMjf/bQfg
+          zKCcsULwt7eYb5QqXcldZnV22fbmga5FoItxC8HkGZxglf+deyfUgD19ce9Ka1uY
+          a7iclHpSwIIeOXJ1389rV0hJewLav2UHijI9kkeUpw+1yTApVydpK63ihn/dcpSu
+          TWXXE69vOLehOQWlSD37kRm2if3s49wJenZNDhlrvGnfDzZlBBpUjARe6RQ2D0/A
+          5eAtvnxBjZVl/PIOEIE13l2QJe3D/SBxEypNWRgWcyl9YNZuf8N18YUISskiawTF
+          7wIDAQAB
+          -----END PUBLIC KEY-----
+
+plugins:
+  # Only applies when the request was identified as the anonymous consumer.
+  - name: request-termination
+    consumer: anonymous
+    config:
+      status_code: 401
+      message: Unauthorized
