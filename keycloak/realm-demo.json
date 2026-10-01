@@ -4,7 +4,8 @@
     "sslRequired": "none",
     "accessTokenLifespan": 3600,
     "otpPolicyType": "totp",
-    "otpPolicyAlgorithm": "HmacSHA256",
+    "browserFlow": "browser-mfa",
+    "otpPolicyAlgorithm": "HmacSHA1",
     "otpPolicyDigits": 6,
     "otpPolicyLookAheadWindow": 1,
     "otpPolicyPeriod": 30,
@@ -20,7 +21,7 @@
             "directAccessGrantsEnabled": false,
             "standardFlowEnabled": true,
             "redirectUris": [
-                "http://localhost:8000/personApi"
+                "http://localhost:8000/personApi/"
             ],
             "enabled": true
         }
@@ -43,6 +44,54 @@
                 "CONFIGURE_TOTP"
             ],
             "enabled": true
+        }
+    ],
+    "authenticationFlows": [
+        {
+            "alias": "browser-mfa",
+            "description": "Browser flow: SSO cookie, or username/password followed by a mandatory OTP",
+            "providerId": "basic-flow",
+            "topLevel": true,
+            "builtIn": false,
+            "authenticationExecutions": [
+                {
+                    "authenticator": "auth-cookie",
+                    "authenticatorFlow": false,
+                    "requirement": "ALTERNATIVE",
+                    "priority": 10,
+                    "userSetupAllowed": false
+                },
+                {
+                    "authenticatorFlow": true,
+                    "flowAlias": "browser-mfa-forms",
+                    "requirement": "ALTERNATIVE",
+                    "priority": 20,
+                    "userSetupAllowed": false
+                }
+            ]
+        },
+        {
+            "alias": "browser-mfa-forms",
+            "description": "Username/password plus mandatory OTP (enrolls TOTP when the user has none)",
+            "providerId": "basic-flow",
+            "topLevel": false,
+            "builtIn": false,
+            "authenticationExecutions": [
+                {
+                    "authenticator": "auth-username-password-form",
+                    "authenticatorFlow": false,
+                    "requirement": "REQUIRED",
+                    "priority": 10,
+                    "userSetupAllowed": false
+                },
+                {
+                    "authenticator": "auth-otp-form",
+                    "authenticatorFlow": false,
+                    "requirement": "REQUIRED",
+                    "priority": 20,
+                    "userSetupAllowed": false
+                }
+            ]
         }
     ],
     "components": {

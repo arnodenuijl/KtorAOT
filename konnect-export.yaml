@@ -31,10 +31,14 @@ services:
     config:
       auth_methods:
       - authorization_code
-      client_id: kong-client
-      client_secret: kong-client-secret
+      - session
+      client_id:
+      - kong-client
+      client_secret:
+      - kong-client-secret
       issuer: http://keycloak.localhost:8080/realms/demo
-      redirect_uri: http://localhost:8000/personApi
+      redirect_uri:
+      - http://localhost:8000/personApi/
       scopes:
       - openid
       - profile
@@ -44,6 +48,8 @@ services:
       consumer_claim:
       - preferred_username
       hide_credentials: true
+      login_action: redirect
+      login_tokens: []
     protocols:
     - grpc
     - grpcs
