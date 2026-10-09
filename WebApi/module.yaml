@@ -2,7 +2,16 @@ product: jvm/app
 
 settings:
   kotlin:
+    version: 2.4.20
     serialization: json
+    # Equivalent of the Gradle `ktor { openApi { ... } }` block
+    compilerPlugins:
+      - id: io.ktor.ktor-compiler-plugin
+        dependency: io.ktor:ktor-compiler-plugin:3.6.0
+        options:
+          openApiEnabled: "true"
+          openApiCodeInference: "true"
+          openApiOnlyCommented: "false"
   jvm:
     jdk:
       version: 25
@@ -17,6 +26,7 @@ dependencies:
   - $libs.exposed.json
   - $libs.exposed.jdbc
   - $libs.oracle.jdbc
+  - $libs.kotlin.reflect
   - $libs.ktor.server.core
   - $libs.ktor.server.cio
   - $libs.ktor.server.forwarded.header
