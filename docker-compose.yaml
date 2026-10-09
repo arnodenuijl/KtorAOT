@@ -23,4 +23,10 @@ services:
     volumes:
       - ./scripts:/opt/oracle/scripts/setup:ro
       - ./scripts:/opt/oracle/scripts/startup:ro
+    healthcheck:
+      test: ["CMD-SHELL", "echo 'select 1 from dual;' | sqlplus -s sys/$$ORACLE_PWD@//localhost:1521/FREEPDB1 as sysdba | grep -q '1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
     restart: always

@@ -42,7 +42,7 @@ docker compose up --build
 This starts:
 
 - Oracle Database on `localhost:1521`
-- The Ktor API on `http://localhost:8080`
+- The Ktor API on `http://localhost:9000`
 
 For a direct image build:
 
@@ -50,11 +50,11 @@ For a direct image build:
 docker build -f WebApi/Dockerfile -t ktor-service .
 ```
 
-The API container connects to the database using `ORACLE_HOST=oracle-23ai`. The application uses the following database connection defaults:
+The API container connects to the database using `ORACLE_HOST=oracle`. The application uses the following database connection defaults:
 
 | Setting | Value |
 | --- | --- |
-| Host | `localhost` locally, `oracle-23ai` in Compose |
+| Host | `localhost` locally, `oracle` in Compose |
 | Port | `1521` |
 | Service | `FREEPDB1` |
 | User | `ktor` |
@@ -73,7 +73,7 @@ docker compose down
 Start Oracle separately:
 
 ```powershell
-docker compose up -d oracle-23ai
+docker compose up -d oracle
 ```
 
 Then build the project:
@@ -111,25 +111,25 @@ Run the tests with `.\kotlin.bat test` and all checks with `.\kotlin.bat check`.
 
 ## API
 
-The server listens on port `8080`.
+The server listens on port `9000`.
 
 | Method | Path | Description |
 | --- | --- | --- |
-| `GET` | `/` | Returns a greeting |
-| `GET` | `/greet/{name}` | Returns a personalized greeting |
-| `GET` | `/listDir` | Lists the application directory |
-| `GET` | `/persons` | Lists all persons |
-| `GET` | `/persons/{id}` | Gets one person |
-| `POST` | `/persons` | Creates a person |
-| `PUT` | `/persons/{id}` | Updates a person |
-| `DELETE` | `/persons/{id}` | Deletes one person |
-| `DELETE` | `/persons` | Deletes all persons |
-| `GET` | `/swagger` | Opens the generated Swagger UI |
+| `GET` | `/personApi/` | Returns a greeting |
+| `GET` | `/personApi/greet/{name}` | Returns a personalized greeting |
+| `GET` | `/personApi/listDir` | Lists the application directory |
+| `GET` | `/personApi/persons` | Lists all persons |
+| `GET` | `/personApi/persons/{id}` | Gets one person |
+| `POST` | `/personApi/persons` | Creates a person |
+| `PUT` | `/personApi/persons/{id}` | Updates a person |
+| `DELETE` | `/personApi/persons/{id}` | Deletes one person |
+| `DELETE` | `/personApi/persons` | Deletes all persons |
+| `GET` | `/personApi/swagger` | Opens the generated Swagger UI |
 
 Example request:
 
 ```powershell
-curl.exe -X POST http://localhost:8080/persons `
+curl.exe -X POST http://localhost:9000/personApi/persons `
   -H "Content-Type: application/json" `
   -d '{"id":0,"name":"Ada Lovelace","age":36,"details":{"address":"London","phoneNumber":"+44 20 0000 0000"}}'
 ```
