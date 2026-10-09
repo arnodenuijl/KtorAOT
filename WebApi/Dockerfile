@@ -26,8 +26,6 @@ COPY gradle ./gradle
 COPY WebApi/build.gradle.kts WebApi/build.gradle.kts
 COPY Domain/build.gradle.kts Domain/build.gradle.kts
 COPY Persistence/build.gradle.kts Persistence/build.gradle.kts
-COPY SerializableProcessor/build.gradle.kts SerializableProcessor/build.gradle.kts
-COPY ReWrites/build.gradle.kts ReWrites/build.gradle.kts
 
 RUN chmod +x gradlew \
     && ./gradlew --no-daemon --version
@@ -40,9 +38,7 @@ WORKDIR /workspace
 
 COPY Domain Domain
 COPY Persistence Persistence
-COPY SerializableProcessor SerializableProcessor
 COPY WebApi WebApi
-COPY ReWrites ReWrites
 
 
 

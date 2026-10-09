@@ -8,13 +8,6 @@ pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
-        maven {
-            url = uri("https://artifacts.codegenomeproject.org/maven")
-            credentials {
-                username = "arnodenuijl@gmail.com"
-                password = "cgp_UrcXdMuD1GY7IQvQWHnHHG3apz7hf7iYMSpjTc3PAmY"
-            }
-        }
     }
 }
 plugins {
@@ -25,20 +18,10 @@ dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://artifacts.codegenomeproject.org/maven")
-            credentials {
-                username = "arnodenuijl@gmail.com"
-                password = "cgp_UrcXdMuD1GY7IQvQWHnHHG3apz7hf7iYMSpjTc3PAmY"
-            }
-        }
-        // Add custom internal/private repositories here once for all submodules
     }
 }
 
 rootProject.name = "KtorAOT"
-include("SerializableProcessor")
 include("WebApi")
 include("Domain")
 include("Persistence")
-include("ReWrites")

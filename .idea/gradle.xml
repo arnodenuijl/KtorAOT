@@ -11,8 +11,6 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/Domain" />
             <option value="$PROJECT_DIR$/Persistence" />
-            <option value="$PROJECT_DIR$/ReWrites" />
-            <option value="$PROJECT_DIR$/SerializableProcessor" />
             <option value="$PROJECT_DIR$/WebApi" />
           </set>
         </option>
