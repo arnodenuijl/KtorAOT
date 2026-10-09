@@ -1,17 +1,4 @@
 services:
-  oracle:
-    image: container-registry.oracle.com/database/free:latest
-    init: true
-    ports:
-      - "1521:1521"
-    environment:
-      - ORACLE_PWD=YourSecurePassword123!
-    volumes:
-#      - oracle-data:/opt/oracle/oradata
-      - ./scripts:/opt/oracle/scripts/setup:ro
-      - ./scripts:/opt/oracle/scripts/startup:ro
-    restart: always
-
   webapi:
     build:
       context: .
@@ -26,62 +13,20 @@ services:
     depends_on:
       oracle:
         condition: service_healthy
+    restart: no
+
+  oracle:
+    image: container-registry.oracle.com/database/free:latest
+    init: true
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PWD=YourSecurePassword123!
+    volumes:
+      - ./scripts:/opt/oracle/scripts/setup:ro
+      - ./scripts:/opt/oracle/scripts/startup:ro
     restart: always
 
-  ldap:
-    image: ghcr.io/rroemhild/docker-test-openldap:master
-    container_name: ldap
-    ports:
-      - "10389:10389"  # LDAP
-      - "10636:10636"  # LDAPS
-    restart: on-failure
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.0
-    container_name: keycloak
-    command: start-dev --import-realm
-    environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: admin
-      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-      KC_HOSTNAME: http://keycloak.localhost:8080
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./keycloak/realm-demo.json:/opt/keycloak/data/import/realm-demo.json:ro
-    restart: on-failure
-
-  kong:
-    image: 'kong/kong-gateway:3.16'  # Konnect data plane
-    container_name: kong
-    restart: on-failure
-    depends_on:
-      - ldap
-      - keycloak
-    extra_hosts:
-      - "keycloak.localhost:host-gateway"
-    environment:
-      KONG_ROLE: data_plane
-      KONG_DATABASE: "off"
-      KONG_VITALS: "off"
-      KONG_CLUSTER_MTLS: pki
-      KONG_CLUSTER_CONTROL_PLANE: d0858fda2e.eu.cp.konghq.com:443
-      KONG_CLUSTER_SERVER_NAME: d0858fda2e.eu.cp.konghq.com
-      KONG_CLUSTER_TELEMETRY_ENDPOINT: d0858fda2e.eu.tp.konghq.com:443
-      KONG_CLUSTER_TELEMETRY_SERVER_NAME: d0858fda2e.eu.tp.konghq.com
-      KONG_CLUSTER_CERT: /etc/konnect/tls.crt
-      KONG_CLUSTER_CERT_KEY: /etc/konnect/tls.key
-      KONG_LUA_SSL_TRUSTED_CERTIFICATE: system
-      KONG_KONNECT_MODE: "on"
-      KONG_ROUTER_FLAVOR: expressions
-      # KONG_LOG_LEVEL: debug
-    ports:
-      - "8000:8000"  # Proxy HTTP
-      - "8443:8443"  # Proxy HTTPS
-    volumes:
-      - ./konnect:/etc/konnect:ro  # Konnect data plane cert/key (git-ignored)
-
-volumes:
-  oracle-data:
 
 secrets:
   gradle_properties:
