@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "gradle-to-kotlin-toolchain-plugin": {
+      "source": "singleton11/kotlin-toolchain-skills",
+      "sourceType": "github",
+      "skillPath": "skills/gradle-to-kotlin-toolchain-plugin/SKILL.md",
+      "computedHash": "c217e1f0c72e68a135449d66538ca26a5908943cae94a528b515e39432ecf30f"
+    },
+    "gradle-to-kotlin-toolchain-project": {
+      "source": "singleton11/kotlin-toolchain-skills",
+      "sourceType": "github",
+      "skillPath": "skills/gradle-to-kotlin-toolchain-project/SKILL.md",
+      "computedHash": "e6ca0a481c59d8493d3166e7dd70ab201d6f64ed23ed7141aecf6ad2ddc35839"
+    },
+    "kotlin-toolchain": {
+      "source": "singleton11/kotlin-toolchain-skills",
+      "sourceType": "github",
+      "skillPath": "skills/kotlin-toolchain/SKILL.md",
+      "computedHash": "141615dbf8ac6ed224c5ed36bce343d6fe08874c60fc05ae785ac10691a2ef3d"
+    },
+    "kotlin-toolchain-plugin-authoring": {
+      "source": "singleton11/kotlin-toolchain-skills",
+      "sourceType": "github",
+      "skillPath": "skills/kotlin-toolchain-plugin-authoring/SKILL.md",
+      "computedHash": "eb2f00c8674acb33bba48faeda0438dfd37ed3730a4ec5757354936037d5f15f"
+    }
+  }
+}

@@ -45,6 +45,7 @@ kotlin {
 tasks.test {
     useJUnitPlatform()
 }
+
 tasks.shadowJar {
     mergeServiceFiles()
 }

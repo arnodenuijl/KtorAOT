@@ -92,10 +92,7 @@ fun Application.configureRouting(repos: PersonRepository) {
         route("personApi") {
             swaggerUI(path = "swagger") {
                 info = OpenApiInfo("My API", "1.0")
-                source = OpenApiDocSource.Routing(ContentType.Application.Json) {
-                    routingRoot.descendants()
-                }
-
+                source = OpenApiDocSource.Routing(ContentType.Application.Json)
             }
             personRoutes(repos)
 

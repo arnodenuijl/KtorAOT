@@ -1,0 +1,12 @@
+product: jvm/lib
+
+settings:
+  kotlin:
+    serialization: json
+  jvm:
+    jdk:
+      version: 25
+
+dependencies:
+  - $libs.kotlinx.serialization.json
+

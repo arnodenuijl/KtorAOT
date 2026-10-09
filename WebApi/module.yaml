@@ -1,0 +1,28 @@
+product: jvm/app
+
+settings:
+  kotlin:
+    serialization: json
+  jvm:
+    jdk:
+      version: 25
+    mainClass: ApplicationKt
+  ktor:
+    enabled: true
+
+dependencies:
+  - ../Persistence
+  - ../Domain
+  - $libs.exposed.core
+  - $libs.exposed.json
+  - $libs.exposed.jdbc
+  - $libs.oracle.jdbc
+  - $libs.ktor.server.core
+  - $libs.ktor.server.cio
+  - $libs.ktor.server.forwarded.header
+  - $libs.ktor.server.content.negotiation
+  - $libs.ktor.server.routing.openapi
+  - $libs.ktor.server.routing.swagger
+  - $libs.ktor.serialization.kotlinx.json
+  - $libs.logback.classic
+
