@@ -28,6 +28,9 @@ dependencies {
 }
 
 ktor {
+    fatJar {
+        archiveFileName.set("ktor-service.jar")
+    }
     openApi {
         enabled = true
         codeInferenceEnabled = true
@@ -42,6 +45,10 @@ kotlin {
 tasks.test {
     useJUnitPlatform()
 }
+tasks.shadowJar {
+    mergeServiceFiles()
+}
+
 application {
     mainClass.set("ApplicationKt")
 }

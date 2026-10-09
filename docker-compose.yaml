@@ -3,8 +3,6 @@ services:
     build:
       context: .
       dockerfile: WebApi/Dockerfile
-      secrets:
-        - gradle_properties
     container_name: ktor-webapi
     environment:
         - ORACLE_HOST=oracle
@@ -26,8 +24,3 @@ services:
       - ./scripts:/opt/oracle/scripts/setup:ro
       - ./scripts:/opt/oracle/scripts/startup:ro
     restart: always
-
-
-secrets:
-  gradle_properties:
-    file: ${GRADLE_PROPERTIES_FILE:?Set GRADLE_PROPERTIES_FILE to the absolute path of your user-level gradle.properties}

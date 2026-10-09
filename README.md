@@ -1,6 +1,6 @@
 # KtorAOT
 
-A small Kotlin sample project for testing **Kotlin**, **Ktor**, **JetBrains Exposed**, **Oracle Database**, and **GraalVM Native Image** together.
+A small Kotlin sample project for testing **Kotlin**, **Ktor**, **JetBrains Exposed**, **Oracle Database** together.
 
 The project exposes a JSON REST API for managing persons. It is a multi-module Gradle build and includes a KSP processor that generates serialization support for the domain and web API modules.
 
@@ -10,7 +10,7 @@ The project exposes a JSON REST API for managing persons. It is a multi-module G
 - Ktor 3.6 with the CIO engine
 - JetBrains Exposed 1.5
 - Oracle Database Free / Oracle 23ai-compatible container
-- GraalVM Native Image
+- Shadow (fat) JAR
 - Gradle Wrapper
 - Docker Compose
 
@@ -21,24 +21,23 @@ The project exposes a JSON REST API for managing persons. It is a multi-module G
 | `Domain` | Serializable domain models and repository interface |
 | `Persistence` | Exposed tables and Oracle-backed repository implementation |
 | `SerializableProcessor` | KSP processor for generated serialization registration |
-| `WebApi` | Ktor application, routes, OpenAPI/Swagger UI, and native-image configuration |
+| `WebApi` | Ktor application, routes, OpenAPI/Swagger UI, and shadow JAR packaging |
 | `scripts` | Oracle initialization scripts |
 
 ## Prerequisites
 
-For a local JVM or native build:
+For a local JVM build:
 
-- JDK/GraalVM 25
+- JDK 25
 - Docker, if using the Oracle database container
 
-For the containerized workflow, Docker is sufficient. The Dockerfile uses the Oracle GraalVM Native Image builder image.
+For the containerized workflow, Docker is sufficient. The Dockerfile builds a shadow JAR with Temurin JDK 25 and runs it on Temurin JRE 25.
 
 ## Run with Docker Compose
 
-The native build resolves private Maven dependencies using `codegenomeprojectMavenUsername` and `codegenomeprojectMavenToken` from your user-level `~/.gradle/gradle.properties`. Supply that file as a build-only secret; it is not copied into the image. From the repository root in PowerShell:
+From the repository root:
 
 ```powershell
-$env:GRADLE_PROPERTIES_FILE = Join-Path $HOME '.gradle\gradle.properties'
 docker compose up --build
 ```
 
@@ -47,11 +46,10 @@ This starts:
 - Oracle Database on `localhost:1521`
 - The Ktor API on `http://localhost:8080`
 
-For a direct image build, pass the same file as a BuildKit secret:
+For a direct image build:
 
 ```powershell
-$gradleProperties = Join-Path $HOME '.gradle\gradle.properties'
-docker build --secret "id=gradle_properties,src=$gradleProperties" -f WebApi/Dockerfile -t ktor-service .
+docker build -f WebApi/Dockerfile -t ktor-service .
 ```
 
 The API container connects to the database using `ORACLE_HOST=oracle-23ai`. The application uses the following database connection defaults:
@@ -99,24 +97,16 @@ $env:ORACLE_HOST = "your-oracle-host"
 .\gradlew.bat :WebApi:run
 ```
 
-## Build a GraalVM native executable
-
-The native-image settings are defined in `WebApi/build.gradle.kts`. The build enables resource inclusion, reflection support, G1 GC, and disables fallback images.
+## Build a shadow JAR
 
 ```powershell
-.\gradlew.bat :WebApi:nativeCompile
+.\gradlew.bat :WebApi:shadowJar
 ```
 
-The executable is generated at:
-
-```text
-WebApi/build/native/nativeCompile/ktor-service.exe
-```
-
-Run it with Oracle available:
+The JAR is generated at `WebApi/build/libs/ktor-service.jar`; run it with:
 
 ```powershell
-.\WebApi\build\native\nativeCompile\ktor-service.exe
+java -jar WebApi\build\libs\ktor-service.jar
 ```
 
 ## API
@@ -148,5 +138,4 @@ curl.exe -X POST http://localhost:8080/persons `
 
 - The application inserts two example persons during startup.
 - The JDBC URL targets the `FREEPDB1` pluggable database.
-- Native-image reflection configuration is provided by `WebApi/src/main/kotlin/ReflectionFeature.kt`.
 - Generated build output is ignored by Git; use the Gradle tasks above to recreate it.
