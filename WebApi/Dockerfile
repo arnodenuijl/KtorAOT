@@ -1,40 +1,42 @@
 # syntax=docker/dockerfile:1
 #
-# Multi-stage Dockerfile that builds the WebApi module into a shadow (fat) JAR
-# and runs it on a Temurin JRE image.
+# Multi-stage Dockerfile that builds the WebApi module into an executable JAR
+# with Kotlin Toolchain and runs it on a Temurin JRE image.
 #
-# IMPORTANT: build context must be the repository ROOT (this is a multi-module
-# Gradle project), e.g.:
+# IMPORTANT: build context must be the repository ROOT (multi-module project), e.g.:
 #   docker build -f WebApi/Dockerfile -t ktor-service .
 #############################################
-# Stage 1: warm the Gradle wrapper cache
+# Stage 1: warm the Kotlin Toolchain cache
 #############################################
-FROM eclipse-temurin:25-jdk AS gradle-cache
+FROM eclipse-temurin:25-jdk AS toolchain-cache
+RUN apt-get update && apt-get install -y --no-install-recommends curl unzip \
+    && rm -rf /var/lib/apt/lists/*
 WORKDIR /workspace
-COPY gradlew gradle.properties settings.gradle.kts build.gradle.kts ./
-COPY gradle ./gradle
-COPY WebApi/build.gradle.kts WebApi/build.gradle.kts
-COPY Domain/build.gradle.kts Domain/build.gradle.kts
-COPY Persistence/build.gradle.kts Persistence/build.gradle.kts
-RUN chmod +x gradlew \
-    && ./gradlew --no-daemon --version
+COPY kotlin project.yaml libs.versions.toml ./
+COPY WebApi/module.yaml WebApi/module.yaml
+COPY Domain/module.yaml Domain/module.yaml
+COPY Persistence/module.yaml Persistence/module.yaml
+# Strip CRLF in case the wrapper was checked out with Windows line endings
+RUN sed -i 's/\r$//' kotlin \
+    && chmod +x kotlin \
+    && ./kotlin --version
 #############################################
-# Stage 2: build the shadow JAR
+# Stage 2: build the executable JAR
 #############################################
-FROM gradle-cache AS build
+FROM toolchain-cache AS build
 WORKDIR /workspace
 COPY Domain Domain
 COPY Persistence Persistence
 COPY WebApi WebApi
-RUN ./gradlew --no-daemon :WebApi:shadowJar
+RUN ./kotlin package -m WebApi -f executable-jar \
+    && cp build/tasks/_WebApi_executableJarJvm/WebApi-jvm-executable.jar /workspace/webapi.jar
 #############################################
 # Stage 3: runtime image
 #############################################
 FROM eclipse-temurin:25-jre AS runtime
 RUN groupadd -r ktor && useradd -r -g ktor -s /sbin/nologin ktor
 WORKDIR /app
-COPY --from=build --chown=ktor:ktor \
-    /workspace/WebApi/build/libs/ktor-service.jar /app/ktor-service.jar
+COPY --from=build --chown=ktor:ktor /workspace/webapi.jar /app/webapi.jar
 USER ktor
 EXPOSE 9000
-ENTRYPOINT ["java", "-XX:+UseG1GC", "-XX:MaxRAMPercentage=75", "-jar", "/app/ktor-service.jar"]
+ENTRYPOINT ["java", "-XX:+UseG1GC", "-XX:MaxRAMPercentage=75", "-jar", "/app/webapi.jar"]

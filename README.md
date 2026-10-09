@@ -2,7 +2,7 @@
 
 A small Kotlin sample project for testing **Kotlin**, **Ktor**, **JetBrains Exposed**, **Oracle Database** together.
 
-The project exposes a JSON REST API for managing persons. It is a multi-module Gradle build and includes a KSP processor that generates serialization support for the domain and web API modules.
+The project exposes a JSON REST API for managing persons. It is a multi-module project built with the [Kotlin Toolchain](https://kotlin-toolchain.org/) (declarative `project.yaml` / `module.yaml`, no Gradle).
 
 ## Technology stack
 
@@ -10,8 +10,8 @@ The project exposes a JSON REST API for managing persons. It is a multi-module G
 - Ktor 3.6 with the CIO engine
 - JetBrains Exposed 1.5
 - Oracle Database Free / Oracle 23ai-compatible container
-- Shadow (fat) JAR
-- Gradle Wrapper
+- Kotlin Toolchain (`./kotlin` wrapper)
+- Executable JAR packaging
 - Docker Compose
 
 ## Project layout
@@ -20,18 +20,16 @@ The project exposes a JSON REST API for managing persons. It is a multi-module G
 | --- | --- |
 | `Domain` | Serializable domain models and repository interface |
 | `Persistence` | Exposed tables and Oracle-backed repository implementation |
-| `SerializableProcessor` | KSP processor for generated serialization registration |
-| `WebApi` | Ktor application, routes, OpenAPI/Swagger UI, and shadow JAR packaging |
+| `WebApi` | Ktor application, routes, OpenAPI/Swagger UI, and executable JAR packaging |
 | `scripts` | Oracle initialization scripts |
 
 ## Prerequisites
 
-For a local JVM build:
+For a local build (the `kotlin` wrapper downloads the Toolchain and provisions the JDK automatically):
 
-- JDK 25
 - Docker, if using the Oracle database container
 
-For the containerized workflow, Docker is sufficient. The Dockerfile builds a shadow JAR with Temurin JDK 25 and runs it on Temurin JRE 25.
+For the containerized workflow, Docker is sufficient. The Dockerfile builds an executable JAR with the Kotlin Toolchain on Temurin JDK 25 and runs it on Temurin JRE 25.
 
 ## Run with Docker Compose
 
@@ -81,33 +79,35 @@ docker compose up -d oracle-23ai
 Then build the project:
 
 ```powershell
-.\gradlew.bat build
+.\kotlin.bat build
 ```
 
 Run the WebApi module:
 
 ```powershell
-.\gradlew.bat :WebApi:run
+.\kotlin.bat run -m WebApi
 ```
 
 When Oracle is not running on `localhost`, set `ORACLE_HOST` before starting the application:
 
 ```powershell
 $env:ORACLE_HOST = "your-oracle-host"
-.\gradlew.bat :WebApi:run
+.\kotlin.bat run -m WebApi
 ```
 
-## Build a shadow JAR
+## Package an executable JAR
 
 ```powershell
-.\gradlew.bat :WebApi:shadowJar
+.\kotlin.bat package -m WebApi -f executable-jar
 ```
 
-The JAR is generated at `WebApi/build/libs/ktor-service.jar`; run it with:
+The JAR is generated at `build/tasks/_WebApi_executableJarJvm/WebApi-jvm-executable.jar`; run it with:
 
 ```powershell
-java -jar WebApi\build\libs\ktor-service.jar
+java -jar build\tasks\_WebApi_executableJarJvm\WebApi-jvm-executable.jar
 ```
+
+Run the tests with `.\kotlin.bat test` and all checks with `.\kotlin.bat check`.
 
 ## API
 
@@ -138,4 +138,4 @@ curl.exe -X POST http://localhost:8080/persons `
 
 - The application inserts two example persons during startup.
 - The JDBC URL targets the `FREEPDB1` pluggable database.
-- Generated build output is ignored by Git; use the Gradle tasks above to recreate it.
+- Generated build output is ignored by Git; use the `kotlin` commands above to recreate it.

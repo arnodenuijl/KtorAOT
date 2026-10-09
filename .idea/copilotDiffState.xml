@@ -21,15 +21,6 @@
             </PendingDiffInfo>
           </value>
         </entry>
-        <entry key="$PROJECT_DIR$/docker-compose.yaml">
-          <value>
-            <PendingDiffInfo>
-              <option name="filePath" value="$PROJECT_DIR$/docker-compose.yaml" />
-              <option name="originalContent" value="services:&#10;  webapi:&#10;    build:&#10;      context: .&#10;      dockerfile: WebApi/Dockerfile&#10;    container_name: ktor-webapi&#10;    environment:&#10;        - ORACLE_HOST=oracle&#10;    ports:&#10;      - &quot;9000:9000&quot;&#10;    depends_on:&#10;      oracle:&#10;        condition: service_healthy&#10;    restart: no&#10;&#10;  oracle:&#10;    image: container-registry.oracle.com/database/free:latest&#10;    init: true&#10;    ports:&#10;      - &quot;1521:1521&quot;&#10;    environment:&#10;      - ORACLE_PWD=YourSecurePassword123!&#10;    volumes:&#10;      - ./scripts:/opt/oracle/scripts/setup:ro&#10;      - ./scripts:/opt/oracle/scripts/startup:ro&#10;    restart: always&#10;&#10;&#10;secrets:&#10;  gradle_properties:&#10;    file: ${GRADLE_PROPERTIES_FILE:?Set GRADLE_PROPERTIES_FILE to the absolute path of your user-level gradle.properties}" />
-              <option name="updatedContent" value="services:&#10;  webapi:&#10;    build:&#10;      context: .&#10;      dockerfile: WebApi/Dockerfile&#10;    container_name: ktor-webapi&#10;    environment:&#10;        - ORACLE_HOST=oracle&#10;    ports:&#10;      - &quot;9000:9000&quot;&#10;    depends_on:&#10;      oracle:&#10;        condition: service_healthy&#10;    restart: no&#10;&#10;  oracle:&#10;    image: container-registry.oracle.com/database/free:latest&#10;    init: true&#10;    ports:&#10;      - &quot;1521:1521&quot;&#10;    environment:&#10;      - ORACLE_PWD=YourSecurePassword123!&#10;    volumes:&#10;      - ./scripts:/opt/oracle/scripts/setup:ro&#10;      - ./scripts:/opt/oracle/scripts/startup:ro&#10;    restart: always" />
-            </PendingDiffInfo>
-          </value>
-        </entry>
       </map>
     </option>
   </component>
