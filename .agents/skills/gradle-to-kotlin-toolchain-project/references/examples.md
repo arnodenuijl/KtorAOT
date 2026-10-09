@@ -109,7 +109,7 @@ java=21.0.7-tem
 kotlintoolchain=0.11.0
 ```
 
-## 5. `gradle/libs.versions.toml` cleanup
+## 5. `../../../../libs.versions.toml` cleanup
 
 Remove the whole `[plugins]` block and any `[versions]` key that only fed it (`kotlin`,
 `axion-release-plugin`, `jib-plugin`, `ktlint-plugin`, `detekt-plugin`). Then add entries for every

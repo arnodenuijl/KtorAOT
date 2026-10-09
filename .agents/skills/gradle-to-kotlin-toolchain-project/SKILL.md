@@ -26,8 +26,8 @@ without a native equivalent), `kotlin-toolchain-plugin-authoring` for plugins wr
    working implementation beats a from-scratch port every time. Where to look and what to search for:
    [Phase 2](#phase-2--decide-layout-plugin-set-and-scope) "Scope". Author only after the search comes up empty. Read what you vendor end to end before wiring it
    in — it runs at build time with full filesystem and network access.
-4. **All dependencies should reside in version catalog.** `gradle/libs.versions.toml` survives as the built-in `$libs.*`
-   catalog. Every coordinate in every module/plugin YAML must end up as a `$libs.*` reference. `[bundles]` has no 
+4. **All dependencies should reside in version catalog.** `../../../libs.versions.toml` survives as the built-in `$libs.*`
+   catalog. Every coordinate in every module/plugin YAML must end up as a `$libs.*` reference. `[bundles]` has no
    Toolchain equivalent and becomes a module template — see [No version-catalog bundles](#no-version-catalog-bundles).
 
 ## Workflow
@@ -47,7 +47,7 @@ description verifies.
   (`processResources.dependsOn(...)`, `check.dependsOn(...)`). Each becomes a `@TaskAction`.
 - **Source dependencies on build-generated artifacts.** Grep `src/` for resource names produced by custom
   tasks (`release.properties`, `version.txt`). Each is a constraint to honor without touching source.
-- **`gradle/libs.versions.toml`** — note `[plugins]` entries used only by Gradle plugins, and
+- **`../../../libs.versions.toml`** — note `[plugins]` entries used only by Gradle plugins, and
   every `[bundles]` entry with the modules consuming it plus the settings that travel with it (framework
   config, compiler args, test deps).
 - **`gradle.properties`** — custom keys build logic reads via `project.findProperty(...)` / `-P` (each becomes an env-var override or a
@@ -115,7 +115,7 @@ the Gradle plugin it replaces before trusting it — see
 6. Validate each plugin in isolation: `./kotlin task :<module>:<task>@<plugin>` or `./kotlin do <command>`.
 7. Rewrite CI ([Phase 4](#phase-4--rewrite-ci)).
 8. Delete `build.gradle.kts`, `gradlew`, `gradlew.bat`, `gradle/wrapper/` — but keep
-   `gradle/libs.versions.toml`.
+   `../../../libs.versions.toml`.
 9. Sweep the catalog: drop the whole `[plugins]` block, any `[versions]` keys that only fed it, and
    `[bundles]` once every consumer applies a template.
 10. Sweep every `module.yaml` / `plugin.yaml` for literal Maven coordinates and replace them with
@@ -341,7 +341,7 @@ specific value, inject a stub service instead of relying on precedence.
 ### Dependabot needs a stub `build.gradle.kts`
 
 Dependabot's gradle file fetcher requires a `build.gradle(.kts)` in the configured directory before it scans
-`gradle/libs.versions.toml`; without one, `package-ecosystem: "gradle"` silently no-ops. Keep an empty
+`../../../libs.versions.toml`; without one, `package-ecosystem: "gradle"` silently no-ops. Keep an empty
 `build.gradle.kts` at the root with a comment explaining why. The Toolchain ignores it.
 
 ### amd64-only container images on Apple Silicon
