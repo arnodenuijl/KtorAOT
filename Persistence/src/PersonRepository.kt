@@ -3,6 +3,8 @@ import org.jetbrains.exposed.v1.core.Column
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
 import org.jetbrains.exposed.v1.core.dao.id.IdTable
 import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.like
+import org.jetbrains.exposed.v1.core.lowerCase
 import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import org.jetbrains.exposed.v1.json.json
@@ -39,6 +41,21 @@ class PersonRepository(val database: Database) : IPersonRepository {
         transaction(database) {
             PersonTable
                 .selectAll()
+                .map {
+                    Person(
+                        id = it[PersonTable.id].value,
+                        name = it[PersonTable.name],
+                        age = it[PersonTable.age],
+                        details = it[PersonTable.details]
+                    )
+                }
+        }
+
+    override fun searchPersonsByName(query: String): List<Person> =
+        transaction(database) {
+            PersonTable
+                .selectAll()
+                .where { PersonTable.name.lowerCase() like "%${query.lowercase()}%" }
                 .map {
                     Person(
                         id = it[PersonTable.id].value,

@@ -12,6 +12,15 @@
             </PendingDiffInfo>
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/Domain/src/IPersonRepository.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/Domain/src/IPersonRepository.kt" />
+              <option name="originalContent" value="import kotlin.uuid.Uuid&#10;&#10;interface IPersonRepository {&#10;    fun getPersonById(id: Uuid): Person?&#10;    fun getAllPersons(): List&lt;Person&gt;&#10;    fun addPerson(person: Person): Uuid&#10;    fun updatePerson(id: Uuid, person: Person)&#10;    fun deletePerson(id: Uuid)&#10;    fun deleteAll()&#10;}" />
+              <option name="updatedContent" value="import kotlin.uuid.Uuid&#10;&#10;interface IPersonRepository {&#10;    fun getPersonById(id: Uuid): Person?&#10;    fun getAllPersons(): List&lt;Person&gt;&#10;    fun searchPersonsByName(query: String): List&lt;Person&gt;&#10;    fun addPerson(person: Person): Uuid&#10;    fun updatePerson(id: Uuid, person: Person)&#10;    fun deletePerson(id: Uuid)&#10;    fun deleteAll()&#10;}" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/WebApi/build.gradle.kts">
           <value>
             <PendingDiffInfo>

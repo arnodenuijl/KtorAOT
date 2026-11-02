@@ -3,7 +3,7 @@
 import KtorApplication.rootModule
 import kotlin.uuid.Uuid
 import io.ktor.http.*
-import io.ktor.http.origin
+import io.ktor.http.HttpStatusCode
 import io.ktor.openapi.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
@@ -14,9 +14,16 @@ import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
 import io.ktor.server.plugins.swagger.*
 import io.ktor.server.plugins.origin
 import io.ktor.server.request.*
-import io.ktor.server.response.*
+import io.ktor.server.request.receive
+import io.ktor.server.response.respond
 import io.ktor.server.routing.*
+import io.ktor.server.routing.delete
+import io.ktor.server.routing.get
 import io.ktor.server.routing.openapi.*
+import io.ktor.server.routing.openapi.describe
+import io.ktor.server.routing.post
+import io.ktor.server.routing.put
+import io.ktor.server.routing.route
 import io.ktor.util.toMap
 import io.ktor.utils.io.*
 import kotlinx.serialization.json.Json
@@ -89,12 +96,13 @@ object KtorApplication {
 
 fun Application.configureRouting(repos: PersonRepository) {
     routing {
+
         route("personApi") {
+
             swaggerUI(path = "swagger") {
                 info = OpenApiInfo("My API", "1.0")
                 source = OpenApiDocSource.Routing(ContentType.Application.Json)
             }
-            personRoutes(repos)
 
             get("/") {
                 val request = call.request
@@ -124,6 +132,75 @@ fun Application.configureRouting(repos: PersonRepository) {
                     else -> call.respond(HttpStatusCode.Created, Greeting2("Hello $name!"))
                 }
             }
+
+            personRoutes(repos)
+
         }
+    }
+}
+
+private fun Route.personRoutes(repos: PersonRepository) {
+    route("persons") {
+        get("/{id}") {
+            val id = call.parameters["id"]?.let { Uuid.parse(it) }
+            if (id == null) {
+                call.respond<String>(HttpStatusCode.BadRequest, "Invalid ID")
+                return@get
+            }
+            val person = repos.getPersonById(id)
+            if (person == null) {
+                call.respond<String>(HttpStatusCode.NotFound, "Person not found")
+            } else {
+                call.respond<Person>(person)
+            }
+        }.describe { summary = "Get a person by ID" }
+
+        get {
+            val persons = repos.getAllPersons()
+            call.respond<List<Person>>(persons)
+        }.describe { summary = "Get all persons" }
+
+        this.post {
+            val person = call.receive<Person>()
+            val newId = repos.addPerson(person)
+            call.respond<Map<String, Uuid>>(HttpStatusCode.Created, mapOf("id" to newId))
+        }.describe { summary = "Add a new person" }
+
+        this.put("/{id}") {
+            val id = call.parameters["id"]?.let { Uuid.parse(it) }
+            if (id == null) {
+                call.respond<String>(HttpStatusCode.BadRequest, "Invalid ID")
+                return@put
+            }
+            val person = call.receive<Person>()
+            repos.updatePerson(id, person)
+            call.respond<HttpStatusCode>(HttpStatusCode.OK)
+        }.describe { summary = "Update a person by ID" }
+
+        delete("/{id}") {
+            val id = call.parameters["id"]?.let { Uuid.parse(it) }
+            if (id == null) {
+                call.respond<String>(HttpStatusCode.BadRequest, "Invalid ID")
+                return@delete
+            }
+            repos.deletePerson(id)
+            call.respond<HttpStatusCode>(HttpStatusCode.OK)
+        }.describe { summary = "Delete a person by ID" }
+
+        delete {
+            repos.deleteAll()
+            call.respond<HttpStatusCode>(HttpStatusCode.OK)
+        }.describe { summary = "Delete all persons" }
+
+        get("/search") {
+            val name = call.request.queryParameters["name"]
+            if (name.isNullOrBlank()) {
+                call.respond<String>(HttpStatusCode.BadRequest, "Query parameter 'name' is required")
+                return@get
+            }
+            call.respond<List<Person>>(repos.searchPersonsByName(name))
+        }.describe { summary = "Search persons by name (case insensitive, contains)" }
+    }.describe {
+        tag("Persons")
     }
 }

@@ -1,0 +1,377 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "My API",
+    "version": "1.0"
+  },
+  "paths": {
+    "/personApi/": {
+      "get": {
+        "summary": "",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestEcho"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personApi/listDir": {
+      "get": {
+        "summary": "",
+        "responses": {
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personApi/greet/{name}": {
+      "get": {
+        "summary": "",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Greeting"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Greeting2"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personApi/persons/{id}": {
+      "put": {
+        "tags": [
+          "Persons"
+        ],
+        "summary": "Update a person by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Persons"
+        ],
+        "summary": "Delete a person by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Persons"
+        ],
+        "summary": "Get a person by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Person"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personApi/persons": {
+      "post": {
+        "tags": [
+          "Persons"
+        ],
+        "summary": "Add a new person"
+      },
+      "delete": {
+        "tags": [
+          "Persons"
+        ],
+        "summary": "Delete all persons",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Persons"
+        ],
+        "summary": "Get all persons",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Person"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/personApi/persons/search": {
+      "get": {
+        "tags": [
+          "Persons"
+        ],
+        "summary": "Search persons by name (case insensitive, contains)",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Person"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "webhooks": {
+
+  },
+  "components": {
+    "schemas": {
+      "RequestEcho": {
+        "type": "object",
+        "title": "RequestEcho",
+        "required": [
+          "url",
+          "headers",
+          "body"
+        ],
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "headers": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "body": {
+            "type": "string"
+          }
+        }
+      },
+      "Greeting": {
+        "type": "object",
+        "title": "Greeting",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Greeting2": {
+        "type": "object",
+        "title": "Greeting2",
+        "required": [
+          "otherMessage"
+        ],
+        "properties": {
+          "otherMessage": {
+            "type": "string"
+          }
+        }
+      },
+      "PersonDetails": {
+        "type": "object",
+        "title": "PersonDetails",
+        "required": [
+          "address",
+          "phoneNumber"
+        ],
+        "properties": {
+          "address": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          }
+        }
+      },
+      "Person": {
+        "type": "object",
+        "title": "Person",
+        "required": [
+          "id",
+          "name",
+          "age",
+          "details"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "details": {
+            "$ref": "#/components/schemas/PersonDetails"
+          }
+        }
+      }
+    }
+  }
+}
