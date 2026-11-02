@@ -3,7 +3,7 @@ product: jvm/app
 settings:
   kotlin:
     version: 2.4.20
-    serialization: json
+    serialization: enabled
     # Equivalent of the Gradle `ktor { openApi { ... } }` block
   jvm:
     jdk:
@@ -21,4 +21,5 @@ dependencies:
 
 test-dependencies:
   - $libs.ktor.client.mock
+  - $libs.pact.consumer.junit5
 

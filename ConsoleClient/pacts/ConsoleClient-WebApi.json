@@ -1,0 +1,131 @@
+{
+  "consumer": {
+    "name": "ConsoleClient"
+  },
+  "interactions": [
+    {
+      "comments": {
+        "testname": "PersonApiClientContractTest.returns the person when the provider responds with 200(MockServer)",
+        "text": [
+
+        ]
+      },
+      "description": "a request for an existing person",
+      "key": "4fa2e285",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "a person with id 3f2504e0-4f89-41d3-9a0c-0305e82c3301 exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/personApi/persons/3f2504e0-4f89-41d3-9a0c-0305e82c3301"
+      },
+      "response": {
+        "body": {
+          "content": {
+            "age": 42,
+            "details": {
+              "address": "1 Main Street",
+              "phoneNumber": "+31 6 12345678"
+            },
+            "id": "3f2504e0-4f89-41d3-9a0c-0305e82c3301",
+            "name": "Jane Doe"
+          },
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$.age": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.details.address": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.details.phoneNumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                }
+              ]
+            },
+            "$.name": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "transport": "http",
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "comments": {
+        "testname": "PersonApiClientContractTest.returns null when the provider responds with 404(MockServer)",
+        "text": [
+
+        ]
+      },
+      "description": "a request for a missing person",
+      "key": "d2802fb3",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "no person with id 00000000-0000-0000-0000-000000000001 exists"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/personApi/persons/00000000-0000-0000-0000-000000000001"
+      },
+      "response": {
+        "status": 404
+      },
+      "transport": "http",
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pact-jvm": {
+      "version": "4.7.6"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "WebApi"
+  }
+}

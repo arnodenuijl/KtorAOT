@@ -88,13 +88,13 @@ object ApplicationKt {
 }
 
 object KtorApplication {
-    fun Application.rootModule(repos: PersonRepository) {
+    fun Application.rootModule(repos: IPersonRepository) {
         configureRouting(repos)
     }
 }
 
 
-fun Application.configureRouting(repos: PersonRepository) {
+fun Application.configureRouting(repos: IPersonRepository) {
     routing {
 
         route("personApi") {
@@ -139,7 +139,7 @@ fun Application.configureRouting(repos: PersonRepository) {
     }
 }
 
-private fun Route.personRoutes(repos: PersonRepository) {
+private fun Route.personRoutes(repos: IPersonRepository) {
     route("persons") {
         get("/{id}") {
             val id = call.parameters["id"]?.let { Uuid.parse(it) }

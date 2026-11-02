@@ -3,7 +3,7 @@ product: jvm/app
 settings:
   kotlin:
     version: 2.4.20
-    serialization: json
+    serialization: enabled
     # Equivalent of the Gradle `ktor { openApi { ... } }` block
     compilerPlugins:
       - id: io.ktor.ktor-compiler-plugin
@@ -35,4 +35,10 @@ dependencies:
   - $libs.ktor.server.routing.swagger
   - $libs.ktor.serialization.kotlinx.json
   - $libs.logback.classic
+
+test-dependencies:
+  - $libs.pact.provider.junit5
+  - $libs.groovy
+  - $libs.groovy.json
+  - $libs.groovy.xml
 
